@@ -18,8 +18,8 @@ class Solver {
         mass * G - F * sin(toRadians(a))
     }
 
-    double countNf(def Ftr, def mu) {
-        Ftr / mu
+    double countMu(def Ft, def N) {
+        Ft / N
     }
 
     double countF(def mass, def Ftr, def mu, def a) {
