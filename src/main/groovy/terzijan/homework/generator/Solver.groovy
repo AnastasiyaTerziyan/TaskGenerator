@@ -18,12 +18,12 @@ class Solver {
         mass * G - F * sin(toRadians(a))
     }
 
-    double countMu(def Ft, def N) {
-        Ft / N
+    double countNf(def Ftr, def mu) {
+        Ftr / mu
     }
 
-    double countF(def mass, def N, def a) {
-        (mass * G - N) / sin(toRadians(a))
+    double countF(def mass, def Ftr, def mu, def a) {
+        (mass * G - (Ftr / mu)) / sin(toRadians(a))
     }
 
     double solve(Unknown unknown, Object... additionalArgs) {
@@ -38,7 +38,7 @@ class Solver {
                 countMu(additionalArgs[0], additionalArgs[1])
                 break
             case Unknown.Fabst:
-                countF(additionalArgs[0], additionalArgs[1], additionalArgs[2])
+                countF(additionalArgs[0], additionalArgs[1], additionalArgs[2], additionalArgs[3])
                 break
         }
     }

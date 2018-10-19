@@ -39,7 +39,7 @@ class Generator {
     static generateTask(BufferedReader reader, Unknown taskType, Sql sql) {
         println(HOW_MUCH)
         def n = reader.readLine().toInteger()
-        for (int i = 0; i <= n; i++) {
+        for (int i = 0; i < n; i++) {
             generateTask(taskType, sql)
         }
         println("Задания готовы. Введите любую команду для возврата в главное меню")
@@ -75,8 +75,7 @@ class Generator {
                 def bindings = [mass: generator.generateMass(), alpha: generator.generateAlpha(), mu: generator.generateMu(),
                                 ForceTr: generator.generateForceTr()]
                 def template =  templateEngine.createTemplate(abstractForceTask).make(bindings)
-                def result = solver.solve(taskType, bindings.mass, solver.countN(bindings.mass, bindings.abstractForce,
-                        bindings.alpha), bindings.alpha).round(2)
+                def result = solver.solve(taskType, bindings.mass, bindings.ForceTr, bindings.mu, bindings.alpha).round(2)
                 saveToDb(sql, template, result, taskType)
                 break
             default:
@@ -90,8 +89,7 @@ class Generator {
     }
 
     static showTask(BufferedReader reader, Unknown type, Sql sql) {
-        sql.eachRow("select * from TASKS where UNKNOWN = ${type.toString()}") { row ->
-            println('_________________________________________\n')
+        sql.eachRow(type ? "select * from TASKS where UNKNOWN = ${type.toString()}" : "select * from TASKS") { row ->
             println("Задание ${row.ID}")
             println(row.TASK_FULL_TEXT)
             println('_________________________________________\n')
@@ -142,7 +140,7 @@ class Generator {
                         continue
                         break
                     case '4':
-                        generateTask(reader, Unknown.Ftr, sql)
+                        generateTask(reader, Unknown.Fabst, sql)
                         continue
                         break
                     default:
@@ -154,7 +152,8 @@ class Generator {
                         "1 - С неизвестной силой трения \n" +
                         "2 - С неизвестной массой \n" +
                         "3 - С неизвестным коэффициентом трения \n" +
-                        "4 - С неизвестной силой воздействия")
+                        "4 - С неизвестной силой воздействия\n" +
+                        "5 - Все задания")
                 switch (reader.readLine()) {
                     case '1':
                         showTask(reader, Unknown.Ftr, sql)
@@ -170,6 +169,10 @@ class Generator {
                         break
                     case '4':
                         showTask(reader, Unknown.Ftr, sql)
+                        continue
+                        break
+                    case '5':
+                        showTask(reader, null, sql)
                         continue
                         break
                     default:
